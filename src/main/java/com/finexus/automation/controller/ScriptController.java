@@ -55,6 +55,9 @@ public class ScriptController {
 	@Autowired	
 	private TestngResultsRepository testngResultRep;
 	
+//	@Autowired
+//	private TestCaseHistoryService testCaseHistoryService;
+	
 //	@ResponseBody 
 	@RequestMapping(value = "/search/api/getSearchResult/{fileName}", method = RequestMethod.POST)
 
@@ -69,14 +72,13 @@ public class ScriptController {
 			// ********** PUSH THE Test case file to Github *********
 			pushOverRepository(fileName);
 			
-			Thread.sleep(60000);
+			Thread.sleep(30000);
 			
 			createTestngResults();
 			
 		} catch (IOException | NoWorkTreeException | GitAPIException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return "successful";
@@ -149,25 +151,7 @@ public class ScriptController {
 		}
 	}
 
-	/*
-	 * public static void stringToDom(String xmlSource, String fileName) throws
-	 * SAXException, ParserConfigurationException, IOException, TransformerException
-	 * { // Parse the given input DocumentBuilderFactory factory =
-	 * DocumentBuilderFactory.newInstance(); DocumentBuilder builder =
-	 * factory.newDocumentBuilder(); Document doc = builder.parse(new
-	 * InputSource(new StringReader(xmlSource)));
-	 * 
-	 * // Write the parsed document to an xml file TransformerFactory
-	 * transformerFactory = TransformerFactory.newInstance(); Transformer
-	 * transformer = transformerFactory.newTransformer(); DOMSource source = new
-	 * DOMSource(doc);
-	 * 
-	 * StreamResult result = new StreamResult(new
-	 * File("d:/mirtalk-ws-eclipse/TestAutomationServer/code/" + fileName));
-	 * transformer.transform(source, result);
-	 * 
-	 * }
-	 */
+	
 	private static void writeUsingOutputStream(String data, String fileName) {
 		OutputStream os = null;
 		try {
@@ -182,8 +166,6 @@ public class ScriptController {
 	            Files.write(path, replaced);
 	            lines.close();
 			System.out.println("Writing done");
-			
-			
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -200,12 +182,22 @@ public class ScriptController {
 	public void createTestngResults() {
 		
 		try {
+			Thread.sleep(15000);
 			TestngResults testNgObj = parseTheXml();
-			
+	
+			// SAVING TestngResults object into DB
 			TestngResults savedEntity = testngResultRep.save(testNgObj);
 			
+			if(savedEntity != null) {
+				System.out.println("Record saved into database.. And its RS-ID is : " + savedEntity.getTestngId());
+			}
+			
+//		 TestCaseHistory reponseEntry = testCaseHistoryService.makeAnEntry(savedEntity);
+			
+			
 		} catch (ParserConfigurationException | SAXException | IOException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}		
 	}
@@ -280,8 +272,11 @@ public class ScriptController {
 												suite.setDuration_ms(Integer.valueOf(attNode.getNodeValue()));
 											else if(attNode.getNodeName().equalsIgnoreCase("started-at"))
 												suite.setStarted_at(attNode.getNodeValue());
-											else if(attNode.getNodeName().equalsIgnoreCase("finished-at"))
+											else if(attNode.getNodeName().equalsIgnoreCase("finished-at")) {
 												suite.setFinished_at(attNode.getNodeValue());
+												System.out.println("Date Format finished at: " + attNode.getNodeValue());
+											}
+												
 										}// end of for loop nmIndex
 									}//end of if trcNode
 
@@ -450,3 +445,25 @@ public class ScriptController {
 	}
 	
 }
+
+
+
+/*
+ * public static void stringToDom(String xmlSource, String fileName) throws
+ * SAXException, ParserConfigurationException, IOException, TransformerException
+ * { // Parse the given input DocumentBuilderFactory factory =
+ * DocumentBuilderFactory.newInstance(); DocumentBuilder builder =
+ * factory.newDocumentBuilder(); Document doc = builder.parse(new
+ * InputSource(new StringReader(xmlSource)));
+ * 
+ * // Write the parsed document to an xml file TransformerFactory
+ * transformerFactory = TransformerFactory.newInstance(); Transformer
+ * transformer = transformerFactory.newTransformer(); DOMSource source = new
+ * DOMSource(doc);
+ * 
+ * StreamResult result = new StreamResult(new
+ * File("d:/mirtalk-ws-eclipse/TestAutomationServer/code/" + fileName));
+ * transformer.transform(source, result);
+ * 
+ * }
+ */

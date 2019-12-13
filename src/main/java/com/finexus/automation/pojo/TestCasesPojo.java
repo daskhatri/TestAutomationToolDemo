@@ -7,8 +7,7 @@ public class TestCasesPojo {
 	private String name;
 	private String Status;
 	
-	
-	
+		
 	public int getId() {
 		return id;
 	}
@@ -28,5 +27,4 @@ public class TestCasesPojo {
 		Status = status;
 	}
 	
-
 }

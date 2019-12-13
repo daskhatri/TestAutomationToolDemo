@@ -1,5 +1,7 @@
 package com.finexus.automation.service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -85,41 +87,41 @@ public class TestngResultsServiceImpl implements TestngResultsService {
 	@Override
 	public List<Map<Object, Object>> getAllTestCases(Long id) {
 
-//		TestngResults testngResults = testngResultsRepository.findById(id).get();
-//		TestCasesPojo tcPojo = new TestCasesPojo();
+		SimpleDateFormat formatterDate = new SimpleDateFormat("yyyy-MM-d'T'HH:mm:ss'ZZZ'");
 
 		List<TestCase> testCasesList = testCaseRepository.findAll();
 
-		List<TestCase> sortedList = testCasesList.stream()
-				.sorted(Comparator.comparingInt(TestCase::getId)
-						.reversed())
-						.collect(Collectors.toList());
+		List<TestCase> sortedList = testCasesList.stream().sorted(Comparator.comparingInt(TestCase::getId).reversed())
+				.collect(Collectors.toList());
 		
 		Map<Object, Object> map = null;
 //		List<Map<Object, Object>> list = new ArrayList<Map<Object, Object>>();
 		List<Map<Object, Object>> allTestCases = new ArrayList<Map<Object, Object>>();
 
+//		try {
 		for (TestCase testCase : sortedList) {
-			TestMethod  testMethod = testCase.getTestMethodsList().get(1);
+			TestMethod testMethod = testCase.getTestMethodsList().get(1);
 			ExceptionsNode exceptionNode = testMethod.getExceptionsList().get(1);
 			map = new HashMap<Object, Object>();
 			String testCaseName = testCase.getName();
-			
+			// "A->id",
+			// "B->name",
+			// "C->status",
+			// "D->lastRun",
+			// "E->reason",
+
 			map.put("A", testCase.getId());
 			map.put("B", testCaseName.substring(18, testCaseName.length()));
 			map.put("E", testMethod.getStatus());
 			map.put("D", testMethod.getFinished_at());
+//			map.put("D", formatterDate.parse(testMethod.getFinished_at()));
 			map.put("C", exceptionNode.getExceptionClass());
-			
-//			map.put("Aid", testCase.getId());
-//			map.put("Bname", testCaseName.substring(18, testCaseName.length()));
-//			map.put("Cstatus", testMethod.getStatus());
-//			map.put("DlastRun", testMethod.getFinished_at());
-//			map.put("Ereason", exceptionNode.getExceptionClass());
-			allTestCases.add(map);						
+			allTestCases.add(map);
 		}
-		
-		
+
+//		} catch (ParseException e) {
+//			e.printStackTrace();
+//		}
 		return allTestCases;
 	}
 

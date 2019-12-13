@@ -8,4 +8,6 @@ public interface TestCaseService {
 
 	TestCase findById(int id);
 	
+	List<TestCase> updaterLiveData();
+	
 }

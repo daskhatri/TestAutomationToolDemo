@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.finexus.automation.entity.TestCase;
+import com.finexus.automation.entity.TestMethod;
+import com.finexus.automation.repository.TestMethodRepository;
 import com.finexus.automation.service.TestCaseService;
 
 @RestController
@@ -26,12 +28,16 @@ public class JenkinsBuildController {
 	private TestCaseService testCaseService;
 
 	@Autowired
+	private TestMethodRepository testMethodRepository;
+	
+	@Autowired
 	private ScriptController scriptController;
 
 	@RequestMapping(path = "/selectedTC/{id}", method = RequestMethod.POST)
 	public void runSingleTestCase(@PathVariable("id") int id) {
 
-		TestCase testCase = testCaseService.findById(id);
+		TestMethod testMethodRec= testMethodRepository.findById(id).get();
+		TestCase testCase = testCaseService.findById();
 
 		String testCaseName = testCase.getName();
 

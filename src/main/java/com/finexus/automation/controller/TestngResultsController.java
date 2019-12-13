@@ -1,5 +1,6 @@
 package com.finexus.automation.controller;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +30,13 @@ public class TestngResultsController {
 	@RequestMapping(path = "/listTestCases/{id}", method = RequestMethod.GET)
 	public ResponseEntity<List<Map<Object, Object>>> getAllTestCases(@PathVariable("id") Long id) {
 
-		List<Map<Object, Object>> list = testngResultsService.getAllTestCases(id);
+		List<Map<Object, Object>> list = null;
+		try {
+			list = testngResultsService.getAllTestCases(id);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
 
@@ -67,4 +74,6 @@ public class TestngResultsController {
 		return new ResponseEntity<>(donutData, HttpStatus.OK);
 	}
 
+	
+//	public ResponseEntity<T>
 }

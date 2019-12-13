@@ -28,7 +28,6 @@ public class CanvasjsChartController {
 		Long topId = canvasjsChartService.getTopRecordId();
 		System.out.println("TopRecordID: " + topId);
 		
-		
 		List<Map<Object, Object>> canvasjsDataList = canvasjsChartService.getCanvasjsChartData(topId);
 		return new ResponseEntity<>(canvasjsDataList, HttpStatus.OK);
 	}
