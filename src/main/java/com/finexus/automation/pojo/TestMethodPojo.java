@@ -8,6 +8,8 @@ public class TestMethodPojo {
 //		private int duration_ms;
 //		private String started_at; 
 	private String finishedAt;
+	
+	private int testMethodId;
 
 		
 
@@ -15,13 +17,14 @@ public class TestMethodPojo {
 		super();
 	}
 
-	public TestMethodPojo(int id, String status, String finishedAt, String name) {
+	public TestMethodPojo(int id, String status, String finishedAt, String name, int testMethodId) {
 		super();
 		this.id = id;
 		this.status = status;
 		
 		this.finishedAt = finishedAt;
 		this.name = name;
+		this.testMethodId = testMethodId;
 	}
 
 	public int getId() {
@@ -54,6 +57,14 @@ public class TestMethodPojo {
 
 	public void setFinishedAt(String finishedAt) {
 		this.finishedAt = finishedAt;
+	}
+
+	public int getTestMethodId() {
+		return testMethodId;
+	}
+
+	public void setTestMethodId(int testMethodId) {
+		this.testMethodId = testMethodId;
 	}
 
 

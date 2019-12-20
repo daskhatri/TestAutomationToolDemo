@@ -36,13 +36,13 @@ public class JenkinsBuildController {
 	@RequestMapping(path = "/selectedTC/{id}", method = RequestMethod.POST)
 	public void runSingleTestCase(@PathVariable("id") int id) {
 
-		TestMethod testMethodRec= testMethodRepository.findById(id).get();
-		TestCase testCase = testCaseService.findById();
-
+//		TestMethod testMethodRec= testMethodRepository.findById(id).get();
+		TestCase testCase = testCaseService.findById(id);
+//
 		String testCaseName = testCase.getName();
 
-		String command = "curl -X POST http://Auto:1174ecedc83eddf0cb1b8fba9e5a22a2d0@localhost:8080/job/MavenDemoTest/buildWithParameters?token=ztypZvByGW&paramKey=-Dtest&equalOpr==&paramValue="
-				+ testCaseName;
+//		String command = "curl -X POST http://Auto:1174ecedc83eddf0cb1b8fba9e5a22a2d0@localhost:8080/job/MavenDemoTest/buildWithParameters?token=ztypZvByGW&paramKey=-Dtest&equalOpr==&paramValue="
+//				+ testCaseName;
 		try {
 //			Process process = Runtime.getRuntime().exec(command);			
 //			int termination = process.waitFor();			
