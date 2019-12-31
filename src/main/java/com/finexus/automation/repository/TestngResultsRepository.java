@@ -14,5 +14,7 @@ public interface TestngResultsRepository extends JpaRepository<TestngResults, Lo
 	
 	@Query("SELECT   SUM(tr.failed) as failed, SUM(tr.passed) as passed, SUM(tr.ignored) as ignored, sum(tr.skipped) as skipped, SUM(tr.total) as total FROM TestngResults tr")
 	List<Object[]> getTotalCountOfExecutions();
+
+	
 	
 }

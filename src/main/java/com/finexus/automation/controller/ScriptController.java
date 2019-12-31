@@ -179,14 +179,14 @@ public class ScriptController {
 
 	
 	@RequestMapping(value = "/testApi/saveTestngResults", method = RequestMethod.POST)
-	public void createTestngResults() {
-		
+	public TestngResults createTestngResults() {
+		TestngResults savedEntity = null;
 		try {
 			Thread.sleep(15000);
 			TestngResults testNgObj = parseTheXml();
 	
 			// SAVING TestngResults object into DB
-			TestngResults savedEntity = testngResultRep.save(testNgObj);
+			savedEntity = testngResultRep.save(testNgObj);
 			
 			if(savedEntity != null) {
 				System.out.println("Record saved into database.. And its RS-ID is : " + savedEntity.getTestngId());
@@ -199,7 +199,8 @@ public class ScriptController {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		}		
+		}
+		return savedEntity;
 	}
 	
 	@RequestMapping(value = "/search/api/parseTheXml", method = RequestMethod.POST)

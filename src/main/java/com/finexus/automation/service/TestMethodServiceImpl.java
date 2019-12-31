@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,14 +15,17 @@ import com.finexus.automation.entity.ExceptionsNode;
 import com.finexus.automation.entity.TestCase;
 import com.finexus.automation.entity.TestMethod;
 import com.finexus.automation.pojo.TestMethodPojo;
+import com.finexus.automation.repository.ExceptionsNodeRepository;
 import com.finexus.automation.repository.TestMethodRepository;
-import com.google.gson.Gson;
 
 @Service
 public class TestMethodServiceImpl implements TestMethodService {
 
 	@Autowired
 	private TestMethodRepository testMethodRepository;
+	
+	@Autowired
+	private ExceptionsNodeRepository exceptionsNodeRepository;
 
 	@Override
 	public List<TestMethod> findAllTestCases() {
@@ -66,6 +70,12 @@ public class TestMethodServiceImpl implements TestMethodService {
 
 		for (TestMethodPojo testMethodPojo : testMethodPojoList) {
 			map = new HashMap<Object, Object>();
+			
+			// get the record from exception table
+			TestMethod testMethodEntity = testMethodRepository.findById(testMethodPojo.getTestMethodId()).get();
+			String exceptionClass = testMethodEntity.getExceptionsList().get(1).getExceptionClass();
+			
+			
 			// "A->id",
 			// "B->name",
 			// "C->status",
@@ -73,10 +83,10 @@ public class TestMethodServiceImpl implements TestMethodService {
 			// "E->reason",
 
 			map.put("A", testMethodPojo.getId());
-			map.put("B", testMethodPojo.getFinishedAt());
+			map.put("B", testMethodPojo.getName());
 			map.put("E", testMethodPojo.getStatus());
-			map.put("D", testMethodPojo.getName());
-			map.put("C", "ExceptionFound");
+			map.put("D", testMethodPojo.getFinishedAt());
+			map.put("C", exceptionClass);
 
 			lastUpdatedTestMethods.add(map);
 		}
@@ -110,30 +120,6 @@ public class TestMethodServiceImpl implements TestMethodService {
 		return lastUpdatedTestMethods;
 	}
 
-	private List<TestMethodPojo> ConvertObjectToPojo(List<Object> dbLastUpdatedRecords) {
-		TestMethodPojo testMethodPojo = new TestMethodPojo();
-		List<TestMethodPojo> tmList = new ArrayList<TestMethodPojo>();
-
-		for (int i = 0; i < dbLastUpdatedRecords.size(); i++) {
-
-			Object[] row = (Object[]) dbLastUpdatedRecords.get(i);
-			System.out.println("Element " + i + Arrays.toString(row));
-		}
-
-		return null;
-	}
-
-	static <T> List<T> toList(List<Object> object, Class<T> desiredClass) {
-		List<T> transformedList = new ArrayList<>();
-		if (object != null) {
-			for (Object result : object) {
-				String json = new Gson().toJson(result);
-
-				T model = new Gson().fromJson(json, desiredClass);
-				transformedList.add(model);
-			}
-		}
-		return transformedList;
-	}
+	
 
 }

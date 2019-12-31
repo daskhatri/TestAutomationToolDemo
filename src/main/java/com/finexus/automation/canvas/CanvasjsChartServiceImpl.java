@@ -17,8 +17,13 @@ public class CanvasjsChartServiceImpl implements CanvasjsChartService {
 		this.canvasjsChartDao = canvasjsChartDao;
 	}
  
+//	@Override
+//	public List<Map<Object, Object>> getCanvasjsChartData(Long id) {
+//		return canvasjsChartDao.getCanvasjsChartData(id);
+//	}
+	
 	@Override
-	public List<Map<Object, Object>> getCanvasjsChartData(Long id) {
+	public List<List<Object>> getCanvasjsChartData(Long id) {
 		return canvasjsChartDao.getCanvasjsChartData(id);
 	}
 
@@ -27,5 +32,14 @@ public class CanvasjsChartServiceImpl implements CanvasjsChartService {
 		Long id = canvasjsChartDao.getTopRecordId();
 		return id;
 	}
+
+	@Override
+	public List<Map<Object, Object>> getBarChartData(Long id) {
+		return canvasjsChartDao.getBarChartData(id);
+	}
  
+	@Override
+	public List<List<Object>> getLineChartData(Long id) {
+		return canvasjsChartDao.getLineChartData(id);
+	}
 }

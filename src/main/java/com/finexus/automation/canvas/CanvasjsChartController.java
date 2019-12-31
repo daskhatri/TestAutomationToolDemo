@@ -17,19 +17,45 @@ import org.springframework.web.bind.annotation.RequestMethod;
 //https://canvasjs.com/spring-mvc-charts/animated-chart/
 @Controller
 @RequestMapping("/canvasjschart")
-@CrossOrigin(origins = "http://localhost", maxAge = 3600)
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class CanvasjsChartController {
  
 	@Autowired
 	private CanvasjsChartService canvasjsChartService;
  
+//	@RequestMapping(path = "/pieChart/{id}", method = RequestMethod.GET)
+//	public ResponseEntity<List<Map<Object, Object>>> getPieChart(@PathVariable("id") Long id) {
+//		Long topId = canvasjsChartService.getTopRecordId();
+//		System.out.println("TopRecordID: " + topId);
+//		
+//		List<Map<Object, Object>> canvasjsDataList = canvasjsChartService.getCanvasjsChartData(topId);
+//		return new ResponseEntity<>(canvasjsDataList, HttpStatus.OK);
+//	}
+	
 	@RequestMapping(path = "/pieChart/{id}", method = RequestMethod.GET)
-	public ResponseEntity<List<Map<Object, Object>>> getPieChart(@PathVariable("id") Long id) {
+	public ResponseEntity<List<List<Object>>> getPieChart(@PathVariable("id") Long id) {
 		Long topId = canvasjsChartService.getTopRecordId();
 		System.out.println("TopRecordID: " + topId);
 		
-		List<Map<Object, Object>> canvasjsDataList = canvasjsChartService.getCanvasjsChartData(topId);
+		List<List<Object>> canvasjsDataList = canvasjsChartService.getCanvasjsChartData(topId);
 		return new ResponseEntity<>(canvasjsDataList, HttpStatus.OK);
 	}
  
+	@RequestMapping(path = "/barChart", method = RequestMethod.GET)
+	public ResponseEntity<List<Map<Object, Object>>> getBarChart() {
+		Long topId = canvasjsChartService.getTopRecordId();
+		System.out.println("TopRecordID: " + topId);
+		
+		List<Map<Object, Object>> canvasjsDataList = canvasjsChartService.getBarChartData(topId);
+		return new ResponseEntity<>(canvasjsDataList, HttpStatus.OK);
+	}
+	
+	@RequestMapping(path = "/lineChart", method = RequestMethod.GET)
+	public ResponseEntity<List<List<Object>>> getLineChart() {
+		Long topId = canvasjsChartService.getTopRecordId();
+		System.out.println("TopRecordID: " + topId);
+		
+		List<List<Object>> canvasjsDataList = canvasjsChartService.getLineChartData(topId);
+		return new ResponseEntity<>(canvasjsDataList, HttpStatus.OK);
+	}
 }  
