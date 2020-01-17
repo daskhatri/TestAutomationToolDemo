@@ -60,7 +60,7 @@ public class TestMethodServiceImpl implements TestMethodService {
 			tmPojo.setTestMethodId((Integer) row[4]);
 			testMethodPojoList.add(tmPojo);
 			
-			System.out.println("Element " + i + Arrays.toString(row));
+//			System.out.println("Element " + i + Arrays.toString(row));
 		}
 //		List<TestMethodPojo> transformedUpdatedList = toList(dbLastUpdatedRecords, TestMethodPojo.class);
 		Map<Object, Object> map = null;

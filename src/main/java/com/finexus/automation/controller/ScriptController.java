@@ -26,7 +26,10 @@ import org.eclipse.jgit.errors.NoWorkTreeException;
 import org.eclipse.jgit.lib.IndexDiff.StageState;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.jsoup.HttpStatusException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,7 +49,10 @@ import com.finexus.automation.entity.TestCase;
 import com.finexus.automation.entity.TestMethod;
 import com.finexus.automation.entity.TestngResults;
 import com.finexus.automation.repository.TestngResultsRepository;
+import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
 
+
+//KR
 @Controller
 @RequestMapping(value = "/api")
 public class ScriptController {
@@ -61,27 +67,27 @@ public class ScriptController {
 //	@ResponseBody 
 	@RequestMapping(value = "/search/api/getSearchResult/{fileName}", method = RequestMethod.POST)
 
-	public String getSearchResultViaAjax(@RequestBody String content,
+	public ResponseEntity<String> getSearchResultViaAjax(@RequestBody String content,
 			@Valid @PathVariable(value = "fileName") String fileName) {
 		System.out.println("content from server: " + content);
 		System.out.println("filname from server: " + fileName);
+		
 		try {
 			// **************** UPLOADING NEW TEST CASE, FROM EXTENSION TO PROJECT DIRECTORY  ***************
 			writeUsingOutputStream(content, fileName);
 
 			// ********** PUSH THE Test case file to Github *********
 			pushOverRepository(fileName);
-			
 			Thread.sleep(30000);
-			
 			createTestngResults();
-			
 		} catch (IOException | NoWorkTreeException | GitAPIException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+			
+			return new ResponseEntity<String>("InterruptedException occured", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return "successful";
+		return new ResponseEntity<String>("successful", HttpStatus.OK);
 	}
 
 	private void pushOverRepository(String fileName) throws IOException, NoWorkTreeException, GitAPIException {
@@ -102,7 +108,7 @@ public class ScriptController {
 				git.add().addFilepattern(".").call();
 				git.commit().setMessage("Commit to add the file: " + fileName).call();
 
-				CredentialsProvider cp = new UsernamePasswordCredentialsProvider("daskhatri", "github#786");
+				CredentialsProvider cp = new UsernamePasswordCredentialsProvider("daskhatri", "newgithub#786");
 				git.push().setCredentialsProvider(cp).call();
 			}
 

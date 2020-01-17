@@ -20,7 +20,7 @@ import com.finexus.automation.pojo.DonutDataModel;
 import com.finexus.automation.service.TestngResultsService;
 
 @RestController
-@CrossOrigin(origins = "http://localhost", maxAge = 3600)
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class TestngResultsController {
 
 	@Autowired

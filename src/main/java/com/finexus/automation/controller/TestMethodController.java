@@ -18,7 +18,7 @@ import com.finexus.automation.pojo.TestMethodPojo;
 import com.finexus.automation.service.TestMethodService;
 
 @RestController
-@CrossOrigin(origins = "http://localhost", maxAge = 3600)
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class TestMethodController {
 	
 	@Autowired
