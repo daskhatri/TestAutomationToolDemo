@@ -23,6 +23,6 @@ public interface TestMethodRepository extends JpaRepository<TestMethod, Integer>
 	List<Object> getAllTestMethods();
 	
 	// for line chart 
-	@Query(value = "SELECT count(tm.id), DATE(tm.finished_at) FROM test_method tm WHERE tm.finished_at >= (DATE(NOW()) - INTERVAL 25 DAY) GROUP BY DATE(tm.finished_at) ORDER BY tm.finished_at DESC", nativeQuery=true)
+	@Query(value = "SELECT count(tm.id), DATE(tm.finished_at) FROM test_method tm WHERE tm.finished_at >= (DATE(NOW()) - INTERVAL 50 DAY) GROUP BY DATE(tm.finished_at) ORDER BY tm.finished_at DESC", nativeQuery=true)
 	List<Object[]> getNoOfTestCaseGroupByDate();
 }

@@ -53,6 +53,8 @@ import com.finexus.automation.entity.TestCase;
 import com.finexus.automation.entity.TestMethod;
 import com.finexus.automation.entity.TestngResults;
 import com.finexus.automation.repository.TestngResultsRepository;
+import com.finexus.automation.util.JenkinsApiService;
+import com.offbytwo.jenkins.JenkinsServer;
 import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
 
 //KR
@@ -75,23 +77,22 @@ public class ScriptController {
 		System.out.println("filname from server: " + fileName);
 
 //		String testPath = writeUsingOutputStream(content, fileName);
-		
 
 		try {
-			// **************** UPLOADING NEW TEST CASE, FROM EXTENSION TO PROJECT DIRECTORY
-			// ***************
-			
+			// **** UPLOADING NEW TEST CASE, FROM EXTENSION TO PROJECT DIRECTORY *****
 			String testPath = writeUsingOutputStream(content, fileName);
 			fixTheGeneratedScript(testPath);
-			
-			// ********** PUSH THE Test case file to Github *********
+
+			// **** PUSH THE Test case file to Github ****
 			pushOverRepository(fileName);
+
 			Thread.sleep(30000);
+
 			createTestngResults();
+
 		} catch (IOException | NoWorkTreeException | GitAPIException e) {
 			e.printStackTrace();
-		} 
-		catch (InterruptedException e) {
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 
 			return new ResponseEntity<String>("InterruptedException occured", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -102,40 +103,27 @@ public class ScriptController {
 	private void fixTheGeneratedScript(String testPath) {
 		String filePath = testPath;
 		String backupFilePath = filePath;
-		
-		String methodsToInsert = "public void selectFrame(int index) {\r\n" + 
-				"		try {\r\n" + 
-				"			Thread.sleep(5000);\r\n" + 
-				"			driver.switchTo().frame(index);\r\n" + 
-				"		} catch (InterruptedException e) {\r\n" + 
-				"			// TODO Auto-generated catch block\r\n" + 
-				"			e.printStackTrace();\r\n" + 
-				"		}\r\n" + 
-				"	}\r\n" + 
-				"	public void selectParentFrame() {		\r\n" + 
-				"		driver.switchTo().parentFrame();\r\n" + 
-				"	}\r\n" + 
-				"\r\n" + 
-				"	public void selectWindow(int index) {\r\n" + 
-				"		try {\r\n" + 
-				"			Thread.sleep(5000);\r\n" + 
-				"			ArrayList<String> productCatalogueWindow = new ArrayList<String>(driver.getWindowHandles());\r\n" + 
-				"			// change focus to new tab\r\n" + 
-				"			driver.switchTo().window(productCatalogueWindow.get(index));\r\n" + 
-				"		} catch (InterruptedException e) {\r\n" + 
-				"			// TODO Auto-generated catch block\r\n" + 
-				"			e.printStackTrace();\r\n" + 
-				"		}\r\n" + 
-				"	}\r\n" + 
-				"\r\n" + 
-				"	@AfterClass(alwaysRun = true)";
+
+		String methodsToInsert = "public void selectFrame(int index) {\r\n" + "		try {\r\n"
+				+ "			Thread.sleep(5000);\r\n" + "			driver.switchTo().frame(index);\r\n"
+				+ "		} catch (InterruptedException e) {\r\n" + "			// TODO Auto-generated catch block\r\n"
+				+ "			e.printStackTrace();\r\n" + "		}\r\n" + "	}\r\n"
+				+ "	public void selectParentFrame() {		\r\n" + "		driver.switchTo().parentFrame();\r\n"
+				+ "	}\r\n" + "\r\n" + "	public void selectWindow(int index) {\r\n" + "		try {\r\n"
+				+ "			Thread.sleep(5000);\r\n"
+				+ "			ArrayList<String> productCatalogueWindow = new ArrayList<String>(driver.getWindowHandles());\r\n"
+				+ "			// change focus to new tab\r\n"
+				+ "			driver.switchTo().window(productCatalogueWindow.get(index));\r\n"
+				+ "		} catch (InterruptedException e) {\r\n" + "			// TODO Auto-generated catch block\r\n"
+				+ "			e.printStackTrace();\r\n" + "		}\r\n" + "	}\r\n" + "\r\n"
+				+ "	@AfterClass(alwaysRun = true)";
 		try {
 
 			File file = new File(filePath); // creates a new file instance
 //			File fileCopy = new File(backupFilePath.replace(".java", ".txt"));
 //			System.out.println();
 //			copyFile(file, fileCopy);
-			
+
 			FileReader fr = new FileReader(file); // reads the file
 			BufferedReader br = new BufferedReader(fr); // creates a buffering character input stream
 
@@ -181,37 +169,36 @@ public class ScriptController {
 						line = "\t selectWindow(" + selectedFrame + ");";
 					}
 
-				}// end of parent if (line.contains("ERROR: Unsupported command")
-				if(line.contains("@AfterClass(alwaysRun = true)")){
+				} // end of parent if (line.contains("ERROR: Unsupported command")
+				if (line.contains("@AfterClass(alwaysRun = true)")) {
 					line = methodsToInsert;
-					
+
 				}
 				sb.append(line); // appends line to string buffer
 				sb.append("\n"); // line feed
 			}
-			
+
 			/*
-			 * To write contents of StringBuffer to a file, use
-			 * BufferedWriter class.
+			 * To write contents of StringBuffer to a file, use BufferedWriter class.
 			 */
-			
+
 			BufferedWriter bwr = new BufferedWriter(new FileWriter(file));
-			//write contents of StringBuffer to a file
+			// write contents of StringBuffer to a file
 			bwr.write(sb.toString());
-			//flush the stream
+			// flush the stream
 			bwr.flush();
-			//close the stream
+			// close the stream
 			bwr.close();
 			System.out.println("Content of StringBuffer written to File.");
-			
+
 			fr.close(); // closes the stream and release the resources
 			System.out.println("Contents of File: ");
 			System.out.println(sb.toString()); // returns a string that textually represents the object
 		} catch (IOException e) {
 			e.printStackTrace();
-		}		
+		}
 	}// end of method fixTheGeneratedScript
-	
+
 	public static void copyFile(File from, File to) throws IOException {
 		Files.copy(from.toPath(), to.toPath());
 	}
@@ -287,21 +274,18 @@ public class ScriptController {
 		OutputStream os = null;
 		OutputStream backupOs = null;
 		OutputStream containerOs = null;
-		
+
 		String backupFileName = fileName;
-		
+
 		String testsAbsolutePath = "D:/mirtalk-ws-eclipse/TestAutomationServer/MavenFinalDemo/src/test/java/com/finexus/tests/";
 		String backupAbsolutePath = "D:/mirtalk-ws-eclipse/TestAutomationServer/MavenFinalDemo/src/test/java/com/finexus/testsbackup/";
 		String containerAbsolutePath = "D:/mirtalk-ws-eclipse/T24TestAutomationContainer/src/test/java/com/finexus/tests/";
-		
-		
+
 		try {
 			os = new FileOutputStream(new File(testsAbsolutePath + fileName));
 			containerOs = new FileOutputStream(new File(containerAbsolutePath + fileName));
 			backupOs = new FileOutputStream(new File(backupAbsolutePath + backupFileName.replace(".java", ".txt")));
-			
-			
-			
+
 			os.write(data.getBytes(), 0, data.length());
 			containerOs.write(data.getBytes(), 0, data.length());
 			backupOs.write(data.getBytes(), 0, data.length());
@@ -310,14 +294,13 @@ public class ScriptController {
 			Path path = Paths.get(testsAbsolutePath + fileName);
 			Stream<String> lines = Files.lines(path);
 
-			List<String> replaced = lines
-					.map(line -> line
-							.replaceAll("driver = new FirefoxDriver",
-									"WebDriverManager.chromedriver().setup(); driver = new ChromeDriver")
-							.replaceAll("import org.openqa.selenium.firefox.FirefoxDriver",
-									"import org.openqa.selenium.chrome.ChromeDriver")
-							.replaceAll("package com.example.tests;",
-									"package com.finexus.tests; \n import io.github.bonigarcia.wdm.WebDriverManager; \n import java.util.ArrayList;"))
+			List<String> replaced = lines.map(line -> line
+					.replaceAll("driver = new FirefoxDriver",
+							"WebDriverManager.chromedriver().setup(); driver = new ChromeDriver")
+					.replaceAll("import org.openqa.selenium.firefox.FirefoxDriver",
+							"import org.openqa.selenium.chrome.ChromeDriver")
+					.replaceAll("package com.example.tests;",
+							"package com.finexus.tests; \n import io.github.bonigarcia.wdm.WebDriverManager; \n import java.util.ArrayList;"))
 					.collect(Collectors.toList());
 			Files.write(path, replaced);
 			lines.close();
@@ -333,15 +316,23 @@ public class ScriptController {
 				e.printStackTrace();
 			}
 		}
-		return testsAbsolutePath.concat(fileName) ;
+		return testsAbsolutePath.concat(fileName);
 //		return containerAbsolutePath.concat(fileName);
 	}
 
 	@RequestMapping(value = "/testApi/saveTestngResults", method = RequestMethod.POST)
 	public TestngResults createTestngResults() {
+
 		TestngResults savedEntity = null;
 		try {
-			Thread.sleep(15000);
+			//Hardcoded, as to maintain previous code flow. In new flow parameterizing 
+			//methods for dynamic functionality which will be need in future.
+			String buildName = "MavenDemoTest";
+			
+			// Recursive method to check and wait till build get complete
+			checkBuildCompleted(buildName);			
+
+			// Parse the testNg-result.xml
 			TestngResults testNgObj = parseTheXml();
 
 			// SAVING TestngResults object into DB
@@ -359,6 +350,26 @@ public class ScriptController {
 			e.printStackTrace();
 		}
 		return savedEntity;
+	}
+
+	private boolean checkBuildCompleted(String buildName) throws InterruptedException {
+		
+		boolean buildCompleted = false;
+		JenkinsApiService jas = new JenkinsApiService();
+		JenkinsServer jenkins = jas.connectToJenkins("http://localhost:8080", "admin", "admin#123");
+		
+		// true: build is complete
+		// false: build is still running
+
+		if (jas.buildingComplete(jenkins, buildName)) {
+			System.out.println("Build completed");
+			buildCompleted = true;
+		}else {
+			Thread.sleep(2000);
+			checkBuildCompleted(buildName);
+		}		
+		
+		return buildCompleted;
 	}
 
 	@RequestMapping(value = "/search/api/parseTheXml", method = RequestMethod.POST)
@@ -645,6 +656,7 @@ public class ScriptController {
 	}
 
 }
+	
 
 /*
  * public static void stringToDom(String xmlSource, String fileName) throws
